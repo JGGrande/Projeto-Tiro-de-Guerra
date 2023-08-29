@@ -1,7 +1,13 @@
 <?php
 
 // Conecta ao banco de dados do TG)
-$conexao = mysqli_connect('127.0.0.1', 'root', '', 'tg_05-012');
+$conexao = mysqli_connect('172.30.0.2', 'root', 'root_password', 'tg_05-012');
+
+
+// Verifica se houve um erro de conexão
+if (!$conexao) {
+  die('Erro de conexão: ' . mysqli_connect_error());
+}
 
 // Parte dedicada a organização de data --
 // Obtém o ano atual do computador
