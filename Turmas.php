@@ -3,6 +3,11 @@
 $conexao = mysqli_connect('127.0.0.1', 'root', '', 'tg_05-012');
 $sql = "select * from turma order by Ano desc";
 $resultado = mysqli_query($conexao, $sql);
+// Impede o cache do navegador
+header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Data no passado
+
+// Resto do seu código PHP para buscar e exibir os dados do banco de dados
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +26,7 @@ $resultado = mysqli_query($conexao, $sql);
         body {
 
             background-repeat: repeat;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
     </style>
@@ -47,7 +52,7 @@ $resultado = mysqli_query($conexao, $sql);
                         </div>
                         <div class="card-body">
                             <h5>Instrutor Chefe: <h5>
-                                    <h5 class="card-title">Subtenente Wendel</h5><br>
+                                    <h5 class="card-title"><?=$linha['InstrutorC']?></h5><br>
                                     <p class="card-text"><a class="btn btn-primary" href="ListarAtiradores.php?ID_turma=<?= $linha['ID'] ?>" role="button">Acessar</a></p>
                         </div>
                         <?php $cont = "select * from atiradores where ID_turma = {$linha['ID']}";

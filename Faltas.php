@@ -10,14 +10,20 @@ $PegarAno = "select * from turma where ID = {$id_turma}"; //pega o ano da turma 
 $ano = mysqli_query($conexao, $PegarAno);
 $row2 = mysqli_fetch_array($ano); //seleciona cada registro por ordem
 
-if (isset($_POST['Salvar'])) {
 
+//adiciona os dados ao banco de dados do tg
+
+if (isset($_POST['Salvar'])) {
   $numero = $_POST['Atdr'];
   $mes = $_POST['mes'];
   $qtds = $_POST['Qtds'];
+  //altera o numero de faltas de acordo com o mes
   $teste2 = "update atiradores set $mes = $mes + $qtds, TotalF = Marco + Abril + Maio + Junho + Julho + Agosto + Setembro + Outubro + Novembro where ID_turma = '$id_turma' and (NomeG like '$numero%' or Numero = '$numero')";
   mysqli_query($conexao, $teste2);
+  $_POST = 0;
 }
+
+//lista os atiradores por ordem alfabética
 
 if (mysqli_num_rows($resultado) >= 1) {
   $linha = mysqli_fetch_array($resultado);
@@ -51,26 +57,38 @@ if (mysqli_num_rows($resultado) >= 1) {
       /* Ajuste esta altura conforme necessário */
       overflow-y: auto;
     }
+
+    body {
+
+      background-size: cover;
+      overflow-x: hidden;
+
+    }
   </style>
 
 </head>
 
-<body>
+<body background="camuflado.png">
 
   <?php
   require_once('Nav.php');
   ?>
+  
+  <?php if (isset($mensagem)) : ?>
+      <div class="alert alert-success" role="alert">
+        <?= $mensagem ?>
+      </div>
+    <?php endif; ?>
 
-  <br>
+    <br>
 
-  <div class="container">
-    <div class="card bg-dark text-light">
-      <div class="card-body">
-        <center>
-          <h2 class="card-title">Atiradores da turma <?= $row2['Ano'] ?></h2>
-          <div class="card-body bg-light w-50 text-dark">
-            <form method="post" class="row g-3 shadow-none p-3 mb-5" enctype="multipart/form-data">
-              <div class="col-md-3" style="width: 200px;">
+    <div class="container">
+  <div class="card bg-dark text-light">
+    <br>
+          <center><h2>Atiradores da turma <?= $row2['Ano'] ?></h2>
+          <br>
+            <form method="post" class="w-25 rounded p-3 bg-light text-dark" enctype="multipart/form-data" align="left">
+              <div class="mb-3">
                 <label for="Adicionar" class="form-label">Mês</label>
                 <select class="form-select" aria-label="Default select example" name="mes" id="mes">
                   <option value="marco">Março</option>
@@ -84,32 +102,22 @@ if (mysqli_num_rows($resultado) >= 1) {
                   <option value="novembro">Novembro</option>
                 </select>
               </div>
-              <div class="col-md-3" style="width: 80px;">
+              <div class="mb-3">
                 <label for="Qtds" class="form-label">Qtd</label>
                 <input type="Number" class="form-control" id="Qtds" name="Qtds" value="0">
               </div>
-              <div class="col-md-3" style="width: 150px;">
+              <div class="mb-3">
                 <label for="Atdr" class="form-label">Atdr</label>
                 <input type="text" class="form-control" id="Atdr" name="Atdr" placeholder="N° ou Nome">
               </div>
-              <div class="container" align="left">
-                <button type="submit" class="btn btn-warning button-sm" name="Salvar"><i class="fa-solid fa-plus"></i></button>
+              <div class="mb-3">
+                <button type="submit" class="btn btn-warning button-sm" name="Salvar" id="Salvar"><i class="fa-solid fa-plus"></i></button>
               </div>
             </form>
-          </div>
-        </center>
-      </div>
-    </div>
-
-    <?php if (isset($mensagem)) : ?>
-      <div class="alert alert-success" role="alert">
-        <?= $mensagem ?>
-      </div>
-    <?php endif; ?>
-
-    <form method="post" class="row g-3 bg-light text-dark shadow-none p-3 mb-5 bg-light rounded" enctype="multipart/form-data">
+            </center>
+            <br>
       <div class="table-responsive">
-        <table class="table table-striped bg-light shadow-none bg-light rounded">
+        <table class="table table-striped table-dark">
           <thead>
             <tr>
               <th scope="col">N° Atdr</th>
@@ -142,13 +150,12 @@ if (mysqli_num_rows($resultado) >= 1) {
                 <td><?= $linha['Novembro'] ?></td>
                 <td><?= $linha['TotalF'] ?></td>
               </tr>
-      </div>
     <?php endwhile; ?>
     </tbody>
     </table>
+    </div>
   </div>
-  <form>
-
+  </div>
     <!--Impede que a tecla enter envia o formulário-->
 
     <script>
@@ -190,7 +197,6 @@ if (mysqli_num_rows($resultado) >= 1) {
       // Defina a opção selecionada com base no mês atual
       document.getElementById('mes').selectedIndex = mesAtual - 2; // Ajuste para o índice correto
     </script>
-
 
 </body>
 

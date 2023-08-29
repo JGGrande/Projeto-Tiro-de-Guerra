@@ -77,35 +77,11 @@ if (isset($_POST['cadastrar'])) {
   // Termina a parte de verificar o ano do atirador.
 
   //3-preparar a SQL com os dados a serem inseridos
-  $sql = "insert into atiradores (NRa, NomeC, NomeG, NomePai, TelPai, NomeMae, TelMae, DataNasc, LocalNasc, CPF, RG, Religiao, Escolaridade, NTituloEleitor, TipoSangue, Habilitacao, TelContato, Endereco, Profissao, HProfissao, CarteiraAss, RemuneracaoM, RendaF, ID_turma)
-                values ('$NRa', '$NomeC', '$NomeG', '$NomePai', '$TelPai', '$NomeMae', '$TelMae', '$DataNasc', '$LocalNasc', '$CPF', '$RG', '$Religiao', '$Escolaridade', '$NTitulo', '$TipoS', '$Habilitacao', '$TelContato', '$Endereco', '$Profissao', '$HProfissao', '$CarteiraAss', '$RemuM', '$RendaF', '$id_turma')";
+  $sql = "insert into atiradores (NRa, NomeC, NomeG, NomePai, TelPai, NomeMae, TelMae, DataNasc, LocalNasc, CPF, RG, Religiao, Escolaridade, NTituloEleitor, TipoSangue, Habilitacao, TelContato, Endereco, Profissao, HProfissao, CarteiraAss, RemuneracaoM, RendaF, ID_turma, Situacao)
+                values ('$NRa', '$NomeC', '$NomeG', '$NomePai', '$TelPai', '$NomeMae', '$TelMae', '$DataNasc', '$LocalNasc', '$CPF', '$RG', '$Religiao', '$Escolaridade', '$NTitulo', '$TipoS', '$Habilitacao', '$TelContato', '$Endereco', '$Profissao', '$HProfissao', '$CarteiraAss', '$RemuM', '$RendaF', '$id_turma', 'Ligado')";
 
   //executar a SQL
   mysqli_query($conexao, $sql);
-
-
-  //Parte responsável por numerar o atirador cadastrado
-
-  //Recuperar os registros da tabela em ordem alfabética
-  $sql2 = "SELECT ID_ATDRS, NomeC FROM atiradores where DataCadastro = $ano_computador ORDER BY NomeC ASC";
-  $resultado2 = mysqli_query($conexao, $sql2);
-
-  // Inicializar o contador
-  $contador = 1;
-
-  // Atualizar a tabela com os números atribuídos em ordem alfabética
-  while ($row = mysqli_fetch_assoc($resultado2)) {
-    $id = $row["ID_ATDRS"];
-    $numero_alfabetico = $contador;
-
-    // Atualizar o registro com o número atribuído
-    $sql_update = "UPDATE atiradores SET Numero = $numero_alfabetico WHERE ID_ATDRS = $id";
-    mysqli_query($conexao, $sql_update);
-
-    $contador++;
-  }
-
-  //fim da numeração
 
   
   //Mensagem de Sucesso
