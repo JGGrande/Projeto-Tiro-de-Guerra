@@ -2,7 +2,7 @@
 
 // Faz a Conexão com o bando de dados do TG.
 
-$conexao = mysqli_connect('172.30.0.2', 'root', 'root_password', 'tg_05-012');
+$conexao = mysqli_connect('localhost', 'root', 'root', 'tg_05-012');
 
 
 $id_turma = $_GET['ID_turma']; //pega o id da URL para mostrar o usuário de acordo com a turma
