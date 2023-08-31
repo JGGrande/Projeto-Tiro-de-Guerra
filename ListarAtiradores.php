@@ -140,6 +140,7 @@ if (mysqli_num_rows($resultado) >= 1) {
           <h2 class="card-title">Atiradores da turma <?= $row2['Ano']?></h2>
           <a href="ListarAtiradores.php?ID_turma=<?= $linha['ID_turma'] ?>" class="btn btn-primary btn-sm">Atualizar</a>
           <a href="Faltas.php?ID_turma=<?= $linha['ID_turma'] ?>" class="btn btn-primary btn-sm">Faltas</a>
+          <a href="http://localhost:8888/PROJETO-TIRO-DE-GUERRA/GerarExcell.php?ID_turma=<?=$id_turma?>" class="btn btn-primary btn-sm">Gerar Excell <i class="fa-regular fa-file-excel"></i></a>
           <br><br>
           <?php if (mysqli_num_rows($resultado) >= 1) { ?>
             <form method="get" align="right" id="meuForm">
