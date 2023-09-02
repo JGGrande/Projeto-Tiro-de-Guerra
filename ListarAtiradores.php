@@ -2,7 +2,9 @@
 
 // Faz a Conexão com o bando de dados do TG.
 
-$conexao = mysqli_connect('127.0.0.1', 'root', '', 'tg_05-012');
+$conexao = mysqli_connect('localhost', 'root', 'root', 'tg_05-012');
+
+
 $id_turma = $_GET['ID_turma']; //pega o id da URL para mostrar o usuário de acordo com a turma
 $sql = "select * from atiradores where ID_turma = {$id_turma}";
 $resultado = mysqli_query($conexao, $sql);
@@ -138,6 +140,7 @@ if (mysqli_num_rows($resultado) >= 1) {
           <h2 class="card-title">Atiradores da turma <?= $row2['Ano']?></h2>
           <a href="ListarAtiradores.php?ID_turma=<?= $linha['ID_turma'] ?>" class="btn btn-primary btn-sm">Atualizar</a>
           <a href="Faltas.php?ID_turma=<?= $linha['ID_turma'] ?>" class="btn btn-primary btn-sm">Faltas</a>
+          <a href="http://localhost:8888/PROJETO-TIRO-DE-GUERRA/GerarExcell.php?ID_turma=<?=$id_turma?>" class="btn btn-primary btn-sm">Gerar Excell <i class="fa-regular fa-file-excel"></i></a>
           <br><br>
           <?php if (mysqli_num_rows($resultado) >= 1) { ?>
             <form method="get" align="right" id="meuForm">

@@ -1,6 +1,8 @@
 <?php
 
-$conexao = mysqli_connect('127.0.0.1', 'root', '', 'tg_05-012');
+$conexao = mysqli_connect('172.30.0.2', 'root', 'root_password', 'tg_05-012');
+
+
 $sql = "select * from turma order by Ano desc";
 $resultado = mysqli_query($conexao, $sql);
 // Impede o cache do navegador

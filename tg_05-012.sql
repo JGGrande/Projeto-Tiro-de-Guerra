@@ -59,7 +59,7 @@ CREATE TABLE `atiradores` (
   `QtdsFaltas` int(100) NOT NULL,
   `Imagem` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `ID_turma` int(11) DEFAULT NULL,
-  `DataCadastro` year(4) NOT NULL DEFAULT current_timestamp(),
+  `DataCadastro` datetime NOT NULL DEFAULT current_timestamp(),
   `TotalF` int(11) NOT NULL,
   `Marco` int(11) NOT NULL,
   `Abril` int(11) NOT NULL,
