@@ -1,29 +1,38 @@
 <?php
-
+require("config.php");
 // Faz a Conexão com o bando de dados do TG.
 
-$conexao = mysqli_connect('localhost', 'root', 'root', 'tg_05-012');
-
+$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
 
 $id_turma = $_GET['ID_turma']; //pega o id da URL para mostrar o usuário de acordo com a turma
-$sql = "select * from atiradores where ID_turma = {$id_turma}";
-$resultado = mysqli_query($conexao, $sql);
+$sql = "select * from atiradores where ID_turma = :id";
+$consulta = $conn->prepare($sql);
+$consulta->bindParam(":id", $id_turma);
+$consulta->execute();
+$resultado = $consulta->fetchAll(PDO::FETCH_OBJ);
 
 //verifica o ano da turma de acordo com o ID da turma
-$PegarAno = "select * from turma where ID = {$id_turma}";
-$ano = mysqli_query($conexao, $PegarAno);
-$row2 = mysqli_fetch_array($ano);
+$sql_turma = "select * from turma where ID = :id";
+$consulta_turma = $conn->prepare($sql_turma);
+$consulta_turma->bindParam(":id", $id_turma);
+$consulta_turma->execute();
+$resultado_turma = $consulta_turma->fetch(PDO::FETCH_OBJ);
 
 //verifica se a turma possui registros nela
-if (mysqli_num_rows($resultado) >= 1) {
-  $linha = mysqli_fetch_array($resultado);
+
+if ($consulta_turma->rowCount() >= 1) {
+
+  $linha = $consulta_turma->rowCount();
 
 //Executa o camando de deletar atiradores
-  if (isset($_GET['id'])) :
-    $sql = "delete from atiradores where ID_ATDRS = {$_GET['id']}";
-    mysqli_query($conexao, $sql);
+  if (isset($_GET['id'])) {
+    $sql_delete_atdr = "delete from atiradores where ID_ATDRS = :id";
+    $consulta_delete_atdr = $conn->prepare($sql_delete_atdr);
+    $consulta_delete_atdr->bindParam(":id", $_GET["id"]);
+    $consulta_delete_atdr->execute();
+    $resultado_delete_atdr = $consulta_delete_atdr->fetchAll(PDO::FETCH_OBJ);
     $mensagem = "Registro excluído com sucesso.";
-  endif;
+}
 
 
   //Reconhece os atiradores desligados
@@ -93,8 +102,7 @@ if (mysqli_num_rows($resultado) >= 1) {
 } else {
   $mensagem = "NENHUM ATIRADOR ENCONTRADO!";
 }
-
-
+var_dump($resultado_turma);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -137,14 +145,14 @@ if (mysqli_num_rows($resultado) >= 1) {
     <div class="card bg-dark text-light">
       <div class="card-body">
         <center>
-          <h2 class="card-title">Atiradores da turma <?= $row2['Ano']?></h2>
-          <a href="ListarAtiradores.php?ID_turma=<?= $linha['ID_turma'] ?>" class="btn btn-primary btn-sm">Atualizar</a>
-          <a href="Faltas.php?ID_turma=<?= $linha['ID_turma'] ?>" class="btn btn-primary btn-sm">Faltas</a>
-          <a href="http://localhost:8888/PROJETO-TIRO-DE-GUERRA/GerarExcell.php?ID_turma=<?=$id_turma?>" class="btn btn-primary btn-sm">Gerar Excell <i class="fa-regular fa-file-excel"></i></a>
+          <h2 class="card-title">Atiradores da turma <?=$resultado_turma->Ano?></h2>
+          <a href="ListarAtiradores.php?ID_turma=<?= $resultado_turma->ID_turma ?>" class="btn btn-primary btn-sm">Atualizar</a>
+          <a href="Faltas.php?ID_turma=<?= $resultado_turma->ID_turma ?>" class="btn btn-primary btn-sm">Faltas</a>
+          <a href="GerarExcell.php?ID_turma=<?=$id_turma?>" class="btn btn-primary btn-sm">Gerar Excell <i class="fa-regular fa-file-excel"></i></a>
           <br><br>
           <?php if (mysqli_num_rows($resultado) >= 1) { ?>
             <form method="get" align="right" id="meuForm">
-              <input type="hidden" name="ID_turma" value="<?= $linha['ID_turma'] ?>">
+              <input type="hidden" name="ID_turma" value="<?= $resultado_turma->ID_turma ?>">
               <button type="submit" class="btn btn-warning btn-sm" name="Desligados"><i class="fa-solid fa-power-off"></i></button>
               <button type="submit" class="btn btn-warning btn-sm" name="AlfaCresc"><i class="fa-solid fa-arrow-down-z-a"></i></button>
               <button type="submit" class="btn btn-warning btn-sm" name="AlfaDesc"><i class="fa-solid fa-arrow-up-z-a"></i></button>
