@@ -1,7 +1,6 @@
 <?php
-
 // Conecta ao banco de dados do TG)
-$conexao = mysqli_connect('172.30.0.2', 'root', 'root_password', 'tg_05-012');
+$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
 
 
 // Verifica se houve um erro de conexão
@@ -250,7 +249,7 @@ if (isset($_POST['cadastrar'])) {
       </div>
       <br>
       <div class="container">
-        <button type="submit" class="btn btn-primary" name="cadastrar">Cadastrar</button>
+        <button type="submit" class="btn btn-primary" name="cadastrar" onclick="return confirm('Confirma cadastro?')">Cadastrar</button>
         <button type="button" class="btn btn-warning" onclick="voltarPagina()">Voltar</button>
       </div>
     </form>

@@ -1,7 +1,7 @@
 
 <?php
-
-$conexao = mysqli_connect('172.30.0.2', 'root', 'root_password', 'tg_05-012');
+require("config.php");
+$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
 
 if (isset($_POST['salvar'])) {
 
@@ -12,9 +12,7 @@ if (isset($_POST['salvar'])) {
 
         $id = $_POST['id'];
         $sql = "update atiradores set Imagem = '{$Imagem}' where ID_ATDRS = '{$id}'";
-
-
-        mysqli_query($conexao, $sql);
+        $consulta = $conn->prepare($sql);
 
         $mensagem = "IMAGEM ALTERADA COM SUCESSO!";
     }else{
@@ -24,9 +22,11 @@ if (isset($_POST['salvar'])) {
 }
 
 $id = $_GET['id']; //pega o id da URL para mostrar o usuário
-$sql = "select * from atiradores where ID_ATDRS = {$id}";
-$resultado = mysqli_query($conexao, $sql);
-$linha = mysqli_fetch_array($resultado);
+$sql = "select * from atiradores where ID_ATDRS = :id";
+$consulta = $conn->prepare($sql);
+$consulta->bindParam(":id", $_GET['id']);
+$consulta->execute();
+$linha = $consulta->fetch(PDO::FETCH_ASSOC);
 
 ?>
 <!DOCTYPE html>

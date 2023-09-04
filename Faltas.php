@@ -2,8 +2,7 @@
 
 // Faz a Conexão com o BD
 
-$conexao = mysqli_connect('172.30.0.2', 'root', 'root_password', 'tg_05-012');
-
+$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
 
 $id_turma = $_GET['ID_turma']; //pega o id da URL para mostrar o usuário
 $sql = "select * from atiradores where ID_turma = {$id_turma}";
@@ -23,6 +22,7 @@ if (isset($_POST['Salvar'])) {
   $teste2 = "update atiradores set $mes = $mes + $qtds, TotalF = Marco + Abril + Maio + Junho + Julho + Agosto + Setembro + Outubro + Novembro where ID_turma = '$id_turma' and (NomeG like '$numero%' or Numero = '$numero')";
   mysqli_query($conexao, $teste2);
   $_POST = 0;
+  $mensagem= "Foram adicionados " . $qtds . " pontos no mês de " . $mes . " ao Atdr " . $numero;
 }
 
 //lista os atiradores por ordem alfabética

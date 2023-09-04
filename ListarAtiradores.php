@@ -37,72 +37,74 @@ if ($consulta_turma->rowCount() >= 1) {
 
   //Reconhece os atiradores desligados
   if (!(isset($_GET['Desligados']))) {
-    $sql = "select * from atiradores where ID_turma = '$id_turma' order by NomeC asc";
-    $resultado = mysqli_query($conexao, $sql);
-
-    //executar a SQL
-    mysqli_query($conexao, $sql);
+    $sql_atdrs = "select * from atiradores where ID_turma = :id order by NomeC asc";
+    $consulta_atdrs = $conn->prepare($sql_atdrs);
+    $consulta_atdrs->bindParam(":id", $id_turma);
+    $consulta_atdrs->execute();
+    $resultado_atdrs = $consulta_atdrs->fetchAll(PDO::FETCH_OBJ);
   }
 
   if (isset($_GET['Desligados'])) {
-    $sql = "select * from atiradores where ID_turma = '$id_turma' and Situacao = 'Desligado' order by NomeC asc";
-    $resultado = mysqli_query($conexao, $sql);
-
-    //executa a SQL
-    mysqli_query($conexao, $sql);
+    $sql_atdrs = "select * from atiradores where ID_turma = :id and Situacao = 'Desligado' order by NomeC asc";
+    $consulta_atdrs = $conn->prepare($sql_atdrs);
+    $consulta_atdrs->bindParam(":id", $id_turma);
+    $consulta_atdrs->execute();
+    $resultado_atdrs = $consulta_atdrs->fetchAll(PDO::FETCH_OBJ);
   }
 
   //Organiza os atiradores por ordem alfabética
   if (isset($_GET['AlfaCresc'])) {
-    $sql = "select * from atiradores where ID_turma = '$id_turma' order by NomeC asc";
-    $resultado = mysqli_query($conexao, $sql);
-
-    //executar a SQL
-    mysqli_query($conexao, $sql);
+    $sql_atdrs = "select * from atiradores where ID_turma = :id order by NomeC asc";
+    $consulta_atdrs = $conn->prepare($sql_atdrs);
+    $consulta_atdrs->bindParam(":id", $id_turma);
+    $consulta_atdrs->execute();
+    $resultado_atdrs = $consulta_atdrs->fetchAll(PDO::FETCH_OBJ);
   }
 
   if (isset($_GET['AlfaDesc'])) {
-    $sql = "select * from atiradores where ID_turma = '$id_turma' order by NomeC desc";
-    $resultado = mysqli_query($conexao, $sql);
-
-    //executar a SQL
-    mysqli_query($conexao, $sql);
+    $sql_atdrs = "select * from atiradores where ID_turma = :id order by NomeC desc";
+    $consulta_atdrs = $conn->prepare($sql_atdrs);
+    $consulta_atdrs->bindParam(":id", $id_turma);
+    $consulta_atdrs->execute();
+    $resultado_atdrs = $consulta_atdrs->fetchAll(PDO::FETCH_OBJ);
   }
 
   //Busca os atiradores de acordo com o nome de guerra ou numero
   if (isset($_GET['Buscar'])) {
     $nome = $_GET['Busca'];
-    $sql = "select * from atiradores where ID_turma = '$id_turma' and (NomeG like '$nome%' or Numero = '$nome') order by NomeC desc";
-    $resultado = mysqli_query($conexao, $sql);
-
-    //executar a SQL
-    mysqli_query($conexao, $sql);
+    $sql_atdrs = "select * from atiradores where ID_turma = :id and (NomeG like '$nome%' or Numero = '$nome') order by NomeC desc";
+    $consulta_atdrs = $conn->prepare($sql_atdrs);
+    $consulta_atdrs->bindParam(":id", $id_turma);
+    $consulta_atdrs->execute();
+    $resultado_atdrs = $consulta_atdrs->fetchAll(PDO::FETCH_OBJ);
   }
 
   //parte responsável por numerar os atiradores de acordo com sua ordem alfabética
 
   //Recuperar os registros da tabela em ordem alfabética
-  $sql2 = "SELECT ID_ATDRS, NomeC FROM atiradores where ID_turma = '$id_turma' ORDER BY NomeC ASC";
-  $resultado2 = mysqli_query($conexao, $sql2);
+  $sql_ordemA = "SELECT ID_ATDRS, NomeC FROM atiradores where ID_turma = id: ORDER BY NomeC ASC";
+  $consulta_ordemA = $conn->prepare($sql_ordemA);
 
   // Inicializar o contador
   $contador = 1;
 
   // Atualizar a tabela com os números atribuídos em ordem alfabética
-  while ($row = mysqli_fetch_assoc($resultado2)) {
-    $id = $row["ID_ATDRS"];
+  foreach ($resultado_atdrs as $row){
+    $id = $row->ID_ATDRS;
     $numero_alfabetico = $contador;
 
     // Atualizar o registro com o número atribuído
     $sql_update = "UPDATE atiradores SET Numero = $numero_alfabetico WHERE ID_ATDRS = $id";
     mysqli_query($conexao, $sql_update);
+    $consulta_update = $conn->prepare($sql_update);
 
     $contador++;
   }
+
 } else {
   $mensagem = "NENHUM ATIRADOR ENCONTRADO!";
 }
-var_dump($resultado_turma);
+//var_dump($resultado_atdrs);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -146,13 +148,13 @@ var_dump($resultado_turma);
       <div class="card-body">
         <center>
           <h2 class="card-title">Atiradores da turma <?=$resultado_turma->Ano?></h2>
-          <a href="ListarAtiradores.php?ID_turma=<?= $resultado_turma->ID_turma ?>" class="btn btn-primary btn-sm">Atualizar</a>
-          <a href="Faltas.php?ID_turma=<?= $resultado_turma->ID_turma ?>" class="btn btn-primary btn-sm">Faltas</a>
+          <a href="ListarAtiradores.php?ID_turma=<?= $id_turma ?>" class="btn btn-primary btn-sm">Atualizar</a>
+          <a href="Faltas.php?ID_turma=<?= $id_turma?>" class="btn btn-primary btn-sm">Faltas</a>
           <a href="GerarExcell.php?ID_turma=<?=$id_turma?>" class="btn btn-primary btn-sm">Gerar Excell <i class="fa-regular fa-file-excel"></i></a>
           <br><br>
-          <?php if (mysqli_num_rows($resultado) >= 1) { ?>
+          <?php if ($consulta->rowCount() >= 1) { ?>
             <form method="get" align="right" id="meuForm">
-              <input type="hidden" name="ID_turma" value="<?= $resultado_turma->ID_turma ?>">
+              <input type="hidden" name="ID_turma" value="<?=$id_turma?>">
               <button type="submit" class="btn btn-warning btn-sm" name="Desligados"><i class="fa-solid fa-power-off"></i></button>
               <button type="submit" class="btn btn-warning btn-sm" name="AlfaCresc"><i class="fa-solid fa-arrow-down-z-a"></i></button>
               <button type="submit" class="btn btn-warning btn-sm" name="AlfaDesc"><i class="fa-solid fa-arrow-up-z-a"></i></button>
@@ -205,13 +207,14 @@ var_dump($resultado_turma);
           </tr>
         </thead>
         <tbody>
-          <?php while ($linha = mysqli_fetch_array($resultado)) : ?>
+          <?php foreach ($resultado_atdrs as $linha ) { 
+            ?>
             <tr>
-              <td><?= $linha['Numero'] ?></td>
+              <td><?= $linha->Numero ?></td>
               <td>
                 <?php
-                if ($linha['Imagem']) :
-                  $Imagem = $linha['Imagem'];
+                if ($linha->Imagem) :
+                  $Imagem = $linha->Imagem;
                 ?>
                   <a href="<?php echo $Imagem ?>" target="_blank">
                     <img src="<?php echo $Imagem ?>" width="100" height="150">
@@ -220,49 +223,49 @@ var_dump($resultado_turma);
                 endif;
                 ?>
               </td>
-              <td><?= $linha['Situacao'] ?></td>
-              <td><?= $linha['NRa'] ?></td>
-              <td><?= $linha['NomeC'] ?></td>
-              <td><?= $linha['NomeG'] ?></td>
-              <td><?= $linha['NomePai'] ?></td>
-              <td><?= $linha['TelPai'] ?></td>
-              <td><?= $linha['NomeMae'] ?></td>
-              <td><?= $linha['TelMae'] ?></td>
-              <td><?= $linha['DataNasc'] ?></td>
-              <td><?= $linha['LocalNasc'] ?></td>
-              <td><?= $linha['CPF'] ?></td>
-              <td><?= $linha['RG'] ?></td>
-              <td><?= $linha['Religiao'] ?></td>
-              <td><?= $linha['Escolaridade'] ?></td>
-              <td><?= $linha['NTituloEleitor'] ?></td>
-              <td><?= $linha['TipoSangue'] ?></td>
-              <td><?= $linha['Habilitacao'] ?></td>
-              <td><?= $linha['TelContato'] ?></td>
+              <td><?= $linha->Situacao ?></td>
+              <td><?= $linha->NRa?></td>
+              <td><?= $linha->NomeC?></td>
+              <td><?= $linha->NomeG ?></td>
+              <td><?= $linha->NomePai ?></td>
+              <td><?= $linha->TelPai ?></td>
+              <td><?= $linha->NomeMae ?></td>
+              <td><?= $linha->TelMae ?></td>
+              <td><?= $linha->DataNasc ?></td>
+              <td><?= $linha->LocalNasc ?></td>
+              <td><?= $linha->CPF ?></td>
+              <td><?= $linha->RG ?></td>
+              <td><?= $linha->Religiao ?></td>
+              <td><?= $linha->Escolaridade ?></td>
+              <td><?= $linha->NTituloEleitor ?></td>
+              <td><?= $linha->TipoSangue ?></td>
+              <td><?= $linha->Habilitacao ?></td>
+              <td><?= $linha->TelContato ?></td>
               <td>
-                <div class="scrollable-cell"><?= $linha['Endereco'] ?></div>
+                <div class="scrollable-cell"><?= $linha->Endereco?></div>
               </td>
-              <td><?= $linha['Profissao'] ?></td>
-              <td><?= $linha['HProfissao'] ?></td>
-              <td><?= $linha['CarteiraAss'] ?></td>
-              <td><?= $linha['RemuneracaoM'] ?></td>
-              <td><?= $linha['RendaF'] ?></td>
+              <td><?= $linha->Profissao ?></td>
+              <td><?= $linha->HProfissao ?></td>
+              <td><?= $linha->CarteiraAss ?></td>
+              <td><?= $linha->RemuneracaoM ?></td>
+              <td><?= $linha->RendaF ?></td>
               <td>
-                <a href="AlterarAtiradores.php?id=<?= $linha['ID_ATDRS'] ?>">
+                <a href="AlterarAtiradores.php?id=<?= $linha->ID_ATDRS?>">
                   <button type="button" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></button>
                 </a>
-                <a href="ListarAtiradores.php?ID_turma=<?= $linha['ID_turma'] ?>&id=<?= $linha['ID_ATDRS'] ?>" onclick="return confirm('Confirma exclusão?')">
+                <a href="ListarAtiradores.php?ID_turma=<?= $linha->ID_turma ?>&id=<?= $linha->ID_ATDRS ?>" onclick="return confirm('Confirma exclusão?')">
                   <button type="button" class="btn btn-outline-primary"><i class="fa-solid fa-trash-can"></i></button>
                 </a>
               </td>
               <td>
                 <br>
-                <a href="AlterarImagem.php?id=<?= $linha['ID_ATDRS'] ?>">
+                <a href="AlterarImagem.php?id=<?= $linha->ID_ATDRS?>">
                   <button type="button" class="btn btn-outline-primary"><i class="fa-solid fa-image"></i></button>
                 </a>
               </td>
             </tr>
     </div>
-  <?php endwhile; ?>
+  <?php }?>
   </tbody>
   </table>
   </div>

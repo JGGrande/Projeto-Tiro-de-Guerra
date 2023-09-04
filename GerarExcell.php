@@ -13,7 +13,7 @@ $csvFileName = 'relatorio.csv';
 $csvFile = fopen($csvFileName, 'w');
 
 // Escreve os cabeçalhos no arquivo CSV
-$cabecalhos = ['Numero', 'Situacao', 'Numero Ra', 'Nome Completo', 'Nome de Guerra', 'Nome do Pai', 'Tellefone do Pai', 'Nome da mãe', 'Telefone da Mãe', 'Data de nascimento', 'Local de nascimento', 'CPF', 'RG', 'Religaio', 'Escolaridade', 'Nº Titulo Eleitoral', 'Tipo sanguinio', 'Habilitação', 'Telefone de contato', 'Endereço', 'Profissão', 'Horario', 'Carteira Assinada', 'Remuneração mensal', 'Renda Familiar'];
+$cabecalhos = ['Numero', 'Situacao', 'Numero Ra', 'Nome Completo', 'Nome de Guerra', 'Nome do Pai', 'Telefone do Pai', 'Nome da mãe', 'Telefone da Mãe', 'Data de nascimento', 'Local de nascimento', 'CPF', 'RG', 'Religiao', 'Escolaridade', 'Nº Titulo Eleitoral', 'Tipo sanguinio', 'Habilitação', 'Telefone de contato', 'Endereço', 'Profissão', 'Horario', 'Carteira Assinada', 'Remuneração mensal', 'Renda Familiar'];
 
 fputcsv($csvFile, $cabecalhos);
 
