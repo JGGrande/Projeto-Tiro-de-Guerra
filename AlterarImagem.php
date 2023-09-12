@@ -1,7 +1,6 @@
 
 <?php
 require("config.php");
-$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
 
 if (isset($_POST['salvar'])) {
 

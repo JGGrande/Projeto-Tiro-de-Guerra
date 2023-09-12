@@ -1,12 +1,7 @@
 <?php
 // Conecta ao banco de dados do TG)
-$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
+require('config.php');
 
-
-// Verifica se houve um erro de conexão
-if (!$conexao) {
-  die('Erro de conexão: ' . mysqli_connect_error());
-}
 
 // Parte dedicada a organização de data --
 // Obtém o ano atual do computador
@@ -34,8 +29,9 @@ if ($data_json && isset($data_json['utc_datetime'])) {
 // Codigo do envio dos dados ao banco.
 if (isset($_POST['cadastrar'])) {
 
-  $slq_2 = "SELECT * from turma";
-  $postar = mysqli_query($conexao, $slq_2);
+  $consulta2 = $conn->prepare("SELECT * from turma");
+  $consulta2->execute();
+  // $dados = $consulta2->fetchAll(PDO::FETCH_ASSOC); 
 
   //2-receber os valores para inserir
   $NRa = $_POST['NRa'];
@@ -63,33 +59,56 @@ if (isset($_POST['cadastrar'])) {
   $RendaF = $_POST['RendaF'];
 
   // seleciona todos os atributos da tabela atiradores.
-  $sql = "SELECT * from atiradores";
-  $anoTurma = mysqli_query($conexao, $sql);
-
   // Parte responsável por verificar o ano da turma a qual o atirador vai estar cadastrado.
-  if ($postar) {
-    // Verifica se há resultados retornados pela consulta
-    if (mysqli_num_rows($postar) > 0) {
-
-      // Itera sobre os resultados e imprime as informações
-      while ($row = mysqli_fetch_assoc($postar) and $row2 = mysqli_fetch_assoc($anoTurma)) {
-        if ($row['Ano'] == $row2['DataCadastro']) {
-          $id_turma = $row['ID'];
-        }
+  $id_turma = null;
+  if ($consulta2->rowCount() > 0) {
+      $turmas = $consulta2->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($turmas as $turma) {
+          if ($turma['Ano'] == date('Y')) {
+              $id_turma = $turma['ID'];
+              break; // Termina o loop assim que encontrar a turma correta
+          }
       }
-    }
   }
-  // Termina a parte de verificar o ano do atirador.
 
-  //3-preparar a SQL com os dados a serem inseridos
-  $sql = "insert into atiradores (NRa, NomeC, NomeG, NomePai, TelPai, NomeMae, TelMae, DataNasc, LocalNasc, CPF, RG, Religiao, Escolaridade, NTituloEleitor, TipoSangue, Habilitacao, TelContato, Endereco, Profissao, HProfissao, CarteiraAss, RemuneracaoM, RendaF, ID_turma, Situacao)
-                values ('$NRa', '$NomeC', '$NomeG', '$NomePai', '$TelPai', '$NomeMae', '$TelMae', '$DataNasc', '$LocalNasc', '$CPF', '$RG', '$Religiao', '$Escolaridade', '$NTitulo', '$TipoS', '$Habilitacao', '$TelContato', '$Endereco', '$Profissao', '$HProfissao', '$CarteiraAss', '$RemuM', '$RendaF', '$id_turma', 'Ligado')";
+  // // Termina a parte de verificar o ano do atirador.
 
-  //executar a SQL
-  mysqli_query($conexao, $sql);
+  // // 4- Preparar a consulta SQL com os dados a serem inseridos
+  $sql = "INSERT INTO atiradores (Numero, NomeC, NomeG, NomePai, TelPai, NomeMae, TelMae, DataNasc, LocalNasc, CPF, RG, Religiao, Escolaridade, NTituloEleitor, TipoSangue, Habilitacao, TelContato, Endereco, Profissao, HProfissao, CarteiraAss, RemuneracaoM, RendaF, ID_turma, Situacao) 
+          VALUES (:ra, :nomeC, :nomeG, :nomePai, :telPai, :nomeMae, :telMae, :dataNasc, :localNasc, :cpf, :rg, :religiao, :escolaridade, :nTitulo, :tipoS, :habilitacao, :telContato, :endereco, :profissao, :hProfissao, :carteiraAss, :remuneracaoM, :rendaF, :id_turma, 'Ligado')";
+
+  // 5- Preparar a consulta SQL
+  $consulta = $conn->prepare($sql);
+  $consulta->bindParam(":ra", $NRa);
+  $consulta->bindParam(":nomeC", $NomeC);
+  $consulta->bindParam(":nomeG", $NomeG);
+  $consulta->bindParam(":nomePai", $NomePai);
+  $consulta->bindParam(":telPai", $TelPai);
+  $consulta->bindParam(":nomeMae", $NomeMae);
+  $consulta->bindParam(":telMae", $TelMae);
+  $consulta->bindParam(":dataNasc", $DataNasc);
+  $consulta->bindParam(":localNasc", $LocalNasc);
+  $consulta->bindParam(":cpf", $CPF);
+  $consulta->bindParam(":rg", $RG);
+  $consulta->bindParam(":religiao", $Religiao);
+  $consulta->bindParam(":escolaridade", $Escolaridade);
+  $consulta->bindParam(":nTitulo", $NTitulo);
+  $consulta->bindParam(":tipoS", $TipoS);
+  $consulta->bindParam(":habilitacao", $Habilitacao);
+  $consulta->bindParam(":telContato", $TelContato);
+  $consulta->bindParam(":endereco", $Endereco);
+  $consulta->bindParam(":profissao", $Profissao);
+  $consulta->bindParam(":hProfissao", $HProfissao);
+  $consulta->bindParam(":carteiraAss", $CarteiraAss);
+  $consulta->bindParam(":remuneracaoM", $RemuM);
+  $consulta->bindParam(":rendaF", $RendaF);
+  $consulta->bindParam(":id_turma", $id_turma);
+
+  // 6- Executar a consulta SQL
+  $consulta->execute();
 
   
-  //Mensagem de Sucesso
+  // Mensagem de Sucesso
   $mensagem = "Usuario cadastrado com sucesso!";
 }
 

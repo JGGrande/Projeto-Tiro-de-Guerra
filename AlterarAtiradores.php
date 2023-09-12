@@ -1,6 +1,6 @@
 <?php
 require("config.php");
-$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
+
 
 if (isset($_POST['salvar'])) {
 
@@ -30,34 +30,60 @@ if (isset($_POST['salvar'])) {
     $RendaF = $_POST['RendaF'];
     $Situacao = $_POST['Situacao'];
 
-    $sql = "update atiradores set NRa = '{$NRa}',
-                NomeC = '{$NomeC}',
-                NomeG = '{$NomeG}',
-                NomePai = '{$NomePai}',
-                TelPai = '{$TelPai}',
-                NomeMae = '{$NomeMae}',
-                TelMae = '{$TelMae}',
-                DataNasc = '{$DataNasc}',
-                LocalNasc = '{$LocalNasc}',
-                CPF = '{$CPF}',
-                RG = '{$RG}',
-                Religiao = '{$Religiao}',
-                Escolaridade = '{$Escolaridade}',
-                NTituloEleitor = '{$NTitulo}',
-                TipoSangue = '{$TipoS}', 
-                Habilitacao = '{$Habilitacao}',
-                TelContato = '{$TelContato}',
-                Endereco = '{$Endereco}',
-                Profissao = '{$Profissao}',
-                HProfissao = '{$HProfissao}', 
-                CarteiraAss = '{$CarteiraAss}', 
-                RemuneracaoM = '{$RemuM}',
-                RendaF = '{$RendaF}',
-                Situacao = '{$Situacao}' where ID_ATDRS = '{$id}'";
-
+    $sql = "UPDATE atiradores SET NRa = :ra,
+        NomeC = :nomeC,
+        NomeG = :nomeG,
+        NomePai = :nomePai,
+        TelPai = :telPai,
+        NomeMae = :nomeMae,
+        TelMae = :telMae,
+        DataNasc = :dataNasc,
+        LocalNasc = :localNasc,
+        CPF = :cpf,
+        RG = :rg,
+        Religiao = :religiao,
+        Escolaridade = :escolaridade,
+        NTituloEleitor = :nTituloEleitor,
+        TipoSangue = :tipoSangue, 
+        Habilitacao = :habilitacao,
+        TelContato = :telContato,
+        Endereco = :endereco,
+        Profissao = :profissao,
+        HProfissao = :hProfissao, 
+        CarteiraAss = :carteiraAss, 
+        RemuneracaoM = :remuneracaoM,
+        RendaF = :rendaF,
+        Situacao = :situacao
+    WHERE ID_ATDRS = :id";
 
     $consulta = $conn->prepare($sql);
+    $consulta->bindParam(":ra", $NRa);
+    $consulta->bindParam(":nomeC", $NomeC);
+    $consulta->bindParam(":nomeG", $NomeG);
+    $consulta->bindParam(":nomePai", $NomePai);
+    $consulta->bindParam(":telPai", $TelPai);
+    $consulta->bindParam(":nomeMae", $NomeMae);
+    $consulta->bindParam(":telMae", $TelMae);
+    $consulta->bindParam(":dataNasc", $DataNasc);
+    $consulta->bindParam(":localNasc", $LocalNasc);
+    $consulta->bindParam(":cpf", $CPF);
+    $consulta->bindParam(":rg", $RG);
+    $consulta->bindParam(":religiao", $Religiao);
+    $consulta->bindParam(":escolaridade", $Escolaridade);
+    $consulta->bindParam(":nTituloEleitor", $NTituloEleitor);
+    $consulta->bindParam(":tipoSangue", $TipoSangue);
+    $consulta->bindParam(":habilitacao", $Habilitacao);
+    $consulta->bindParam(":telContato", $TelContato);
+    $consulta->bindParam(":endereco", $Endereco);
+    $consulta->bindParam(":profissao", $Profissao);
+    $consulta->bindParam(":hProfissao", $HProfissao);
+    $consulta->bindParam(":carteiraAss", $CarteiraAss);
+    $consulta->bindParam(":remuneracaoM", $RemuM);
+    $consulta->bindParam(":rendaF", $RendaF);
+    $consulta->bindParam(":situacao", $Situacao);
+    $consulta->bindParam(":id", $id);
 
+    $consulta->execute();
     $mensagem = "Atirador alterado com sucesso";
 }
 
@@ -91,6 +117,8 @@ $linha = $consulta->fetch(PDO::FETCH_ASSOC);
      
 
   </style>
+
+    <script  src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body background="camuflado.png">

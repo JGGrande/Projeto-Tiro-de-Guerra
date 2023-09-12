@@ -2,85 +2,101 @@
 
 // Faz a Conexão com o BD
 
-$conexao = mysqli_connect('localhost', 'root', '', 'tg_05-012');
-
+require("config.php");
 $id_turma = $_GET['ID_turma']; //pega o id da URL para mostrar o usuário
-$sql = "select * from atiradores where ID_turma = {$id_turma}";
-$resultado = mysqli_query($conexao, $sql);
-$PegarAno = "select * from turma where ID = {$id_turma}"; //pega o ano da turma de acordo com o id
-$ano = mysqli_query($conexao, $PegarAno);
-$row2 = mysqli_fetch_array($ano); //seleciona cada registro por ordem
+$sql = "SELECT * FROM atiradores WHERE ID_turma = :id_turma";
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':id_turma', $id_turma, PDO::PARAM_INT);
+$stmt->execute();
 
+$PegarAno = "SELECT * FROM turma WHERE ID = :id_turma"; //pega o ano da turma de acordo com o id
+$stmt2 = $conn->prepare($PegarAno);
+$stmt2->bindParam(':id_turma', $id_turma, PDO::PARAM_INT);
+$stmt2->execute();
+$row2 = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-//adiciona os dados ao banco de dados do tg
+// adiciona os dados ao banco de dados do tg
 
 if (!(isset($_POST['Salvar']))) {
-  if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    $pegarNome = "select * from atiradores where ID_ATDRS = $id and ID_turma = $id_turma";
-    $nome = mysqli_query($conexao, $pegarNome);
-    $row3 = mysqli_fetch_array($nome);
-    $escolhaMes = date('m');
-    switch ($escolhaMes) {
-      case 3:
-        $mes = "Marco";
-        break;
-      case 4:
-        $mes = "Abril";
-        break;
-      case 5:
-        $mes = "Maio";
-        break;
-      case 6:
-        $mes = "Junho";
-        break;
-      case 7:
-        $mes = "Julho";
-        break;
-      case 8:
-        $mes = "Agosto";
-        break;
-      case 9:
-        $mes = "Setembro";
-        break;
-      case 10:
-        $mes = "Outubro";
-        break;
-      case 11:
-        $mes = "Novembro";
-        break;
+    if (isset($_GET['id'])) {
+        $id = $_GET['id'];
+        $pegarNome = "SELECT * FROM atiradores WHERE ID_ATDRS = :id AND ID_turma = :id_turma";
+        $stmt3 = $conn->prepare($pegarNome);
+        $stmt3->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt3->bindParam(':id_turma', $id_turma, PDO::PARAM_INT);
+        $stmt3->execute();
+        $row3 = $stmt3->fetch(PDO::FETCH_ASSOC);
+        $escolhaMes = date('m');
+        switch ($escolhaMes) {
+            case 3:
+                $mes = "Marco";
+                break;
+            case 4:
+                $mes = "Abril";
+                break;
+            case 5:
+                $mes = "Maio";
+                break;
+            case 6:
+                $mes = "Junho";
+                break;
+            case 7:
+                $mes = "Julho";
+                break;
+            case 8:
+                $mes = "Agosto";
+                break;
+            case 9:
+                $mes = "Setembro";
+                break;
+            case 10:
+                $mes = "Outubro";
+                break;
+            case 11:
+                $mes = "Novembro";
+                break;
+        }
+        $qtds = $_GET['qts'];
+        //altera o numero de faltas de acordo com o mes
+        $teste2 = "UPDATE atiradores SET $mes = $mes + :qtds, TotalF = Marco + Abril + Maio + Junho + Julho + Agosto + Setembro + Outubro + Novembro WHERE ID_turma = :id_turma AND ID_ATDRS = :id";
+        $stmt4 = $conn->prepare($teste2);
+        $stmt4->bindParam(':qtds', $qtds, PDO::PARAM_INT);
+        $stmt4->bindParam(':id_turma', $id_turma, PDO::PARAM_INT);
+        $stmt4->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt4->execute();
+        $_POST = 0;
+        $mensagem = "Foram adicionados " . $qtds . " pontos no mês de " . $mes . " ao Atdr {$row3['NomeG']}";
     }
-    $qtds = $_GET['qts'];
-    //altera o numero de faltas de acordo com o mes
-    $teste2 = "update atiradores set $mes = $mes + $qtds, TotalF = Marco + Abril + Maio + Junho + Julho + Agosto + Setembro + Outubro + Novembro where ID_turma = '$id_turma' and ID_ATDRS = '$id'";
-    mysqli_query($conexao, $teste2);
-    $_POST = 0;
-    $mensagem = "Foram adicionados " . $qtds . " pontos no mês de " . $mes . " ao Atdr {$row3['NomeG']}";
-  }
 }
 
 if (isset($_POST['Salvar'])) {
-  $numero = $_POST['Atdr'];
-  $mes = $_POST['mes'];
-  $qtds = $_POST['Qtds'];
-  //altera o numero de faltas de acordo com o mes
-  $teste2 = "update atiradores set $mes = $mes + $qtds, TotalF = Marco + Abril + Maio + Junho + Julho + Agosto + Setembro + Outubro + Novembro where ID_turma = '$id_turma' and (NomeG like '$numero%' or Numero = '$numero')";
-  mysqli_query($conexao, $teste2);
-  $_POST = 0;
-  $mensagem = "Foram adicionados " . $qtds . " pontos no mês de " . $mes . " ao Atdr " . $numero;
+    $numero = $_POST['Atdr'];
+    $mes = $_POST['mes'];
+    $qtds = $_POST['Qtds'];
+    //altera o numero de faltas de acordo com o mes
+    $teste2 = "UPDATE atiradores SET $mes = $mes + :qtds, TotalF = Marco + Abril + Maio + Junho + Julho + Agosto + Setembro + Outubro + Novembro WHERE ID_turma = :id_turma AND (NomeG LIKE :numero OR Numero = :numero)";
+    $stmt5 = $conn->prepare($teste2);
+    $stmt5->bindParam(':qtds', $qtds, PDO::PARAM_INT);
+    $stmt5->bindParam(':id_turma', $id_turma, PDO::PARAM_INT);
+    $stmt5->bindParam(':numero', $numero, PDO::PARAM_STR);
+    $stmt5->execute();
+    $_POST = 0;
+    $mensagem = "Foram adicionados " . $qtds . " pontos no mês de " . $mes . " ao Atdr " . $numero;
 }
 
-//lista os atiradores por ordem alfabética
+// lista os atiradores por ordem alfabética
 
-if (mysqli_num_rows($resultado) >= 1) {
-  $linha = mysqli_fetch_array($resultado);
+if ($stmt->rowCount() >= 1) {
+    $linha = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  $sql = "select * from atiradores where ID_turma = '$id_turma' order by NomeC asc";
-  $resultado = mysqli_query($conexao, $sql);
-  //executar a SQL
-  mysqli_query($conexao, $sql);
+    $sql = "SELECT * FROM atiradores WHERE ID_turma = :id_turma ORDER BY NomeC ASC";
+    $stmt6 = $conn->prepare($sql);
+    $stmt6->bindParam(':id_turma', $id_turma, PDO::PARAM_INT);
+    $stmt6->execute();
+    // executar a SQL
+    $stmt6->execute();
 } else {
-  $mensagem = "NENHUM ATIRADOR ENCONTRADO!";
+    $mensagem = "NENHUM ATIRADOR ENCONTRADO!";
 }
 ?>
 
@@ -183,32 +199,32 @@ if (mysqli_num_rows($resultado) >= 1) {
             </tr>
           </thead>
           <tbody>
-            <?php while ($linha = mysqli_fetch_array($resultado)) : ?>
-              <tr>
-                <td><?= $linha['Numero'] ?></td>
-                <td><?= $linha['NomeG'] ?></td>
-                <td><?= $linha['Marco'] ?></td>
-                <td><?= $linha['Abril'] ?></td>
-                <td><?= $linha['Maio'] ?></td>
-                <td><?= $linha['Junho'] ?></td>
-                <td><?= $linha['Julho'] ?></td>
-                <td><?= $linha['Agosto'] ?></td>
-                <td><?= $linha['Setembro'] ?></td>
-                <td><?= $linha['Outubro'] ?></td>
-                <td><?= $linha['Novembro'] ?></td>
-                <td><?= $linha['TotalF'] ?></td>
-                <td>
-                  <a href="Faltas.php?ID_turma=<?= $linha["ID_turma"] ?>&qts=2&id=<?= $linha["ID_ATDRS"] ?>">
-                    <button type="button" class="btn btn-outline-primary"><i class="fa-solid fa-plus"></i></button>
-                  </a>
-                </td>
-                <td>
-                <a href="Faltas.php?ID_turma=<?= $linha["ID_turma"] ?>&qts=-2&id=<?= $linha["ID_ATDRS"] ?>">
-                    <button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-minus"></i></button>
-                  </a>
-                </td>
-              </tr>
-            <?php endwhile; ?>
+          <?php while ($linha = $stmt6->fetch(PDO::FETCH_ASSOC)) : ?>
+    <tr>
+        <td><?= $linha['Numero'] ?></td>
+        <td><?= $linha['NomeG'] ?></td>
+        <td><?= $linha['Marco'] ?></td>
+        <td><?= $linha['Abril'] ?></td>
+        <td><?= $linha['Maio'] ?></td>
+        <td><?= $linha['Junho'] ?></td>
+        <td><?= $linha['Julho'] ?></td>
+        <td><?= $linha['Agosto'] ?></td>
+        <td><?= $linha['Setembro'] ?></td>
+        <td><?= $linha['Outubro'] ?></td>
+        <td><?= $linha['Novembro'] ?></td>
+        <td><?= $linha['TotalF'] ?></td>
+        <td>
+            <a href="Faltas.php?ID_turma=<?= $linha["ID_turma"] ?>&qts=2&id=<?= $linha["ID_ATDRS"] ?>">
+                <button type="button" class="btn btn-outline-primary"><i class="fa-solid fa-plus"></i></button>
+            </a>
+        </td>
+        <td>
+            <a href="Faltas.php?ID_turma=<?= $linha["ID_turma"] ?>&qts=-2&id=<?= $linha["ID_ATDRS"] ?>">
+                <button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-minus"></i></button>
+            </a>
+        </td>
+    </tr>
+<?php endwhile; ?>
           </tbody>
         </table>
       </div>
